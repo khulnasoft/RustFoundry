@@ -1,10 +1,4 @@
-# Rustfoundry
-
-<p align="center">
-    <a href="https://github.com/khulnasoft/rustfoundry">
-        <img src="media/banner.png" alt="banner" style="width:472px; height: 375px" />
-    </a>
-</p>
+# RustFoundry
 
 Rustfoundry is a modular Rust library, designed to help scale programs for distributed,
 production-grade systems. It enables engineers to concentrate on the core business logic
