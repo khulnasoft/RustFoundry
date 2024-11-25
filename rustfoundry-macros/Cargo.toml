@@ -1,0 +1,22 @@
+[package]
+name = "rustfoundry-macros"
+description = "Procedural macros used by rustfoundry."
+version = { workspace = true }
+edition = { workspace = true }
+repository = { workspace = true }
+authors = { workspace = true }
+license = { workspace = true }
+readme = "../README.md"
+
+[features]
+default = ["settings_deny_unknown_fields_by_default"]
+settings_deny_unknown_fields_by_default = []
+
+[lib]
+proc-macro = true
+
+[dependencies]
+darling = { workspace = true }
+proc-macro2 = { workspace = true }
+quote = { workspace = true }
+syn = { workspace = true, features = ["full", "parsing", "extra-traits"] }

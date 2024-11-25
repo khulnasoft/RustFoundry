@@ -1,0 +1,17 @@
+[package]
+name = "examples"
+version = { workspace = true }
+edition = { workspace = true }
+repository = { workspace = true }
+publish = false
+
+[dev-dependencies]
+anyhow = { workspace = true }
+rustfoundry = { workspace = true }
+futures-util = { workspace = true }
+hyper = { workspace = true }
+tokio = { workspace = true, features = ["full"]}
+
+[[example]]
+name = "http_server"
+path = "http_server/main.rs"
