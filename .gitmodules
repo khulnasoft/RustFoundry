@@ -1,3 +1,6 @@
 [submodule "rustfoundry/src/security/libseccomp"]
 	path = rustfoundry/src/security/libseccomp
 	url = https://github.com/seccomp/libseccomp.git
+[submodule "rustfoundry/rustfoundry/src/security/libseccomp"]
+	path = rustfoundry/rustfoundry/src/security/libseccomp
+	url = https://github.com/seccomp/libseccomp.git
