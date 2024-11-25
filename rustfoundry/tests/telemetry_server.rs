@@ -1,7 +1,7 @@
-use rustfoundry::telemetry::settings::{TelemetryServerSettings, TelemetrySettings};
-use rustfoundry::telemetry::{TelemetryConfig, TelemetryServerRoute};
 use futures_util::FutureExt;
 use hyper::{Method, Response};
+use rustfoundry::telemetry::settings::{TelemetryServerSettings, TelemetrySettings};
+use rustfoundry::telemetry::{TelemetryConfig, TelemetryServerRoute};
 use std::net::{Ipv4Addr, SocketAddr};
 
 #[cfg(target_os = "linux")]
