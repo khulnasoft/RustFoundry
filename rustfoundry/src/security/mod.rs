@@ -346,47 +346,24 @@ pub enum Rule {
 /// ```
 pub fn enable_syscall_sandboxing(
     violation_action: ViolationAction,
-    exception_rules: &Vec<Rule>,
-) -> BootstrapResult<()> {
-    let ctx = unsafe { sys::seccomp_init(violation_action as u32) };
-
-    if ctx.is_null() {
-        bail!("failed to initialize seccomp context");
+    rules: Vec<Rule>,
+) -> Result<(), Error> {
+    log::info!("Initializing syscall sandboxing with {} rules", rules.len());
+    
+    for rule in &rules {
+        log::debug!("Adding syscall rule: {:?}", rule);
     }
-
-    for rule in exception_rules {
-        let RawRule {
-            action,
-            syscall,
-            arg_cmps,
-        } = rule.into();
-
-        let init_res = unsafe {
-            sys::seccomp_rule_add_exact_array(
-                ctx,
-                action,
-                syscall,
-                arg_cmps.len().try_into().unwrap(),
-                arg_cmps.as_ptr(),
-            )
-        };
-
-        if init_res != 0 {
-            bail!(
-                "failed to add seccomp exception rule {:#?} with error code {}",
-                rule,
-                init_res
-            );
+    
+    match apply_rules(violation_action, rules) {
+        Ok(_) => {
+            log::info!("Syscall sandboxing enabled successfully");
+            Ok(())
+        }
+        Err(e) => {
+            log::error!("Failed to enable syscall sandboxing: {}", e);
+            Err(e)
         }
     }
-
-    let load_res = unsafe { sys::seccomp_load(ctx) };
-
-    if load_res != 0 {
-        bail!("failed to load seccomp rules with error code {}", load_res);
-    }
-
-    Ok(())
 }
 
 /// Forbids usage of x86_64 CPU cycle counter for [Spectre] mitigation.

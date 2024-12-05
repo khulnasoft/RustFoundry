@@ -304,3 +304,23 @@ impl EnhancedMemoryProfiler {
         Ok(ProfilerSession::new(self.sampling_rate, self.stack_depth))
     }
 }
+
+pub fn start_profiling() -> Result<(), TelemetryError> {
+    if !profiling_enabled() {
+        return Err(TelemetryError::MemoryProfiler(
+            "Profiling not enabled in jemalloc configuration".into()
+        ));
+    }
+
+    match ctl::write(ctl::PROF_ACTIVE, true) {
+        Ok(_) => {
+            log::info!("Memory profiling started successfully");
+            Ok(())
+        }
+        Err(e) => {
+            let ctx = format!("Failed to activate profiling: {}", e);
+            log::error!("{}", ctx);
+            Err(TelemetryError::MemoryProfiler(ctx))
+        }
+    }
+}
