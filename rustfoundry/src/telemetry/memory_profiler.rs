@@ -279,3 +279,28 @@ impl EffientProfiler {
         }
     }
 }
+
+pub struct EnhancedMemoryProfiler {
+    sampling_rate: f64,
+    stack_depth: usize,
+    metrics_enabled: bool,
+}
+
+impl EnhancedMemoryProfiler {
+    pub fn with_metrics(mut self) -> Self {
+        self.metrics_enabled = true;
+        
+        // Register memory metrics
+        add_extra_producer(|buffer| {
+            let stats = self.collect_stats();
+            encode_memory_stats(buffer, stats);
+        });
+        
+        self
+    }
+    
+    pub fn start_profiling_session(&self) -> Result<ProfilerSession, TelemetryError> {
+        ctl::write(ctl::PROF_ACTIVE, true)?;
+        Ok(ProfilerSession::new(self.sampling_rate, self.stack_depth))
+    }
+}

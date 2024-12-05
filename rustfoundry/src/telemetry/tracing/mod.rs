@@ -812,3 +812,16 @@ pub use {
 #[cfg(feature = "testing")]
 #[doc(inline)]
 pub use __test_trace as test_trace;
+
+pub fn stitch_traces(
+    parent_trace: SerializableTraceState,
+    child_name: impl Into<Cow<'static, str>>,
+) -> SpanScope {
+    let options = StartTraceOptions {
+        stitch_with_trace: Some(parent_trace),
+        sampling_ratio: Some(1.0),
+        tags: vec![("trace.type", "stitched")],
+    };
+    
+    start_trace(child_name, options)
+}

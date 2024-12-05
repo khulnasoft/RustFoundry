@@ -442,3 +442,22 @@ where
         self(buffer)
     }
 }
+
+pub fn register_system_metrics() {
+    add_extra_producer(|buffer| {
+        // CPU metrics
+        encode_cpu_metrics(buffer);
+        // Memory metrics
+        encode_memory_metrics(buffer);
+        // IO metrics
+        encode_io_metrics(buffer);
+        // Network metrics
+        encode_network_metrics(buffer);
+    });
+}
+
+// Custom metrics collector
+pub struct MetricsCollector {
+    registry: prometheus_client::registry::Registry,
+    collectors: Vec<Box<dyn MetricsProducer>>,
+}

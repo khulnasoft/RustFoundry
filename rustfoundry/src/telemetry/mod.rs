@@ -303,3 +303,21 @@ pub fn init(config: TelemetryConfig) -> BootstrapResult<TelemetryDriver> {
     #[cfg(not(feature = "telemetry-server"))]
     Ok(TelemetryDriver::new(tele_futures))
 }
+
+impl TelemetryContext {
+    pub fn with_memory_profiling(mut self) -> Self {
+        let profiler = EnhancedMemoryProfiler {
+            sampling_rate: 0.01,
+            stack_depth: 32,
+            metrics_enabled: true,
+        }.with_metrics();
+        
+        self.memory_profiler = Some(profiler);
+        self
+    }
+    
+    pub fn with_system_metrics(self) -> Self {
+        register_system_metrics();
+        self
+    }
+}
