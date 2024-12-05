@@ -1,8 +1,8 @@
 use futures_util::FutureExt;
-use hyper::{Method, Response};
-use rustfoundry::telemetry::settings::{TelemetryServerSettings, TelemetrySettings};
 use http_body_util::combinators::BoxBody;
 use http_body_util::{BodyExt, Full};
+use hyper::{Method, Response};
+use rustfoundry::telemetry::settings::{TelemetryServerSettings, TelemetrySettings};
 use rustfoundry::telemetry::{TelemetryConfig, TelemetryServerRoute};
 use std::future::IntoFuture;
 use std::net::{Ipv4Addr, SocketAddr};
