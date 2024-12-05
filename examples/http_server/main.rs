@@ -14,9 +14,11 @@ mod settings;
 use self::settings::{EndpointSettings, HttpServerSettings, ResponseSettings};
 use anyhow::anyhow;
 use futures_util::stream::{FuturesUnordered, StreamExt};
-use hyper::server::conn::Http;
+use http_body_util::Full;
+use hyper::body::{Bytes, Incoming};
 use hyper::service::service_fn;
-use hyper::{Body, Request, Response};
+use hyper::{Request, Response};
+use hyper_util::rt::{TokioExecutor, TokioIo};
 use rustfoundry::cli::{Arg, ArgAction, Cli};
 use rustfoundry::settings::collections::Map;
 use rustfoundry::telemetry::{self, log, tracing, TelemetryConfig, TelemetryContext};
@@ -193,7 +195,10 @@ async fn serve_connection(
         }
     });
 
-    if let Err(e) = Http::new().serve_connection(conn, on_request).await {
+    if let Err(e) = hyper_util::server::conn::auto::Builder::new(TokioExecutor::new())
+        .serve_connection(TokioIo::new(conn), on_request)
+        .await
+    {
         log::error!("failed to serve HTTP"; "error" => ?e);
         metrics::http_server::failed_connections_total(&endpoint_name).inc();
     }
@@ -204,9 +209,9 @@ async fn serve_connection(
 #[tracing::span_fn("respond to request")]
 async fn respond(
     endpoint_name: Arc<String>,
-    req: Request<Body>,
+    req: Request<Incoming>,
     routes: Arc<Map<String, ResponseSettings>>,
-) -> Result<Response<Body>, Infallible> {
+) -> Result<Response<Full<Bytes>>, Infallible> {
     log::add_fields! {
         "request_uri" => req.uri().to_string(),
         "method" => req.method().to_string()
