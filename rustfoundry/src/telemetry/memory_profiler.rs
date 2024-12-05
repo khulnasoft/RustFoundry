@@ -260,3 +260,22 @@ mod tests {
         );
     }
 }
+
+pub struct EffientProfiler {
+    // Batch memory stats collection
+    stats_buffer: Vec<MemoryStats>,
+    // Use atomic counters for concurrent access
+    allocation_counter: AtomicUsize,
+    // Configure optimal buffer sizes
+    buffer_capacity: usize,
+}
+
+impl EffientProfiler {
+    pub fn record_allocation(&self, size: usize) {
+        self.allocation_counter.fetch_add(size, Ordering::Relaxed);
+        
+        if self.should_flush() {
+            self.flush_stats();
+        }
+    }
+}

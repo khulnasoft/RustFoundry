@@ -10,14 +10,11 @@ use std::error::Error;
 use std::sync::Arc;
 
 pub(crate) type Tracer = cf_rustracing::Tracer<BoxSampler<SpanContextState>, SpanContextState>;
-
 #[derive(Debug, Clone)]
 pub(crate) struct SharedSpan {
-    // NOTE: we intentionally use a lock without poisoning here to not
-    // panic the threads if they just share telemetry with failed thread.
-    pub(crate) inner: Arc<parking_lot::RwLock<Span>>,
-    // NOTE: store sampling flag separately, so we don't need to acquire lock
-    // every time we need to check the flag.
+    // Use parking_lot's RwLock which has better performance characteristics
+    inner: Arc<parking_lot::RwLock<Span>>,
+    // Cache sampling flag to avoid lock acquisition
     is_sampled: bool,
 }
 
@@ -32,6 +29,12 @@ impl From<Span> for SharedSpan {
     }
 }
 
+// Fast path for sampling checks without lock acquisition
+impl SharedSpan {
+    pub fn is_sampled(&self) -> bool {
+        self.is_sampled
+    }
+}
 pub fn write_current_span(write_fn: impl FnOnce(&mut Span)) {
     if let Some(span) = current_span() {
         if span.is_sampled {
