@@ -26,6 +26,7 @@ jobs:
       - check-features
       - test
       - minimal-versions
+      - code-coverage
     steps:
       - run: exit 0
 
@@ -296,3 +297,18 @@ jobs:
         run: _RJEM_MALLOC_CONF=prof:true cargo test --target ${{ matrix.target }} ${{matrix.cargo_args}}
         shell: bash
         env: ${{ matrix.custom_env }}
+
+  code-coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install cargo-tarpaulin
+        run: cargo install cargo-tarpaulin
+      - name: Run code coverage
+        run: cargo tarpaulin --out Xml
