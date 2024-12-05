@@ -1,13 +1,10 @@
-pub struct OptimizedSampler {
+pub(crate) struct TraceSampler {
     ratio: f64,
-    // Use thread-local RNG for better performance
-    rng: thread_local::ThreadLocal<rand::rngs::SmallRng>,
+    rng: rand::ThreadRng,
 }
 
-impl OptimizedSampler {
-    pub fn should_sample(&self) -> bool {
-        self.rng.get_or(|| {
-            rand::rngs::SmallRng::from_entropy()
-        }).gen::<f64>() < self.ratio
+impl TraceSampler {
+    pub fn should_sample(&mut self) -> bool {
+        self.rng.gen::<f64>() < self.ratio
     }
 }

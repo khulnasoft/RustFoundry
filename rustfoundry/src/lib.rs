@@ -178,3 +178,11 @@ macro_rules! service_info {
         }
     };
 }
+
+//! # Module Organization Guidelines
+//! 
+//! - Public API modules expose only what's necessary
+//! - Internal implementation details go in `internal.rs`
+//! - Common utilities shared between modules go in `utils.rs`
+//! - Tests go in separate files with `_test` suffix
+//! - Feature flags control optional functionality
