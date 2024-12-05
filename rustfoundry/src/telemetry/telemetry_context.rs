@@ -34,7 +34,7 @@ pub struct WithTelemetryContext<'f, T> {
     ctx: TelemetryContext,
 }
 
-impl<'f, T> Future for WithTelemetryContext<'f, T> {
+impl<T> Future for WithTelemetryContext<'_, T> {
     type Output = T;
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
@@ -53,7 +53,7 @@ pub struct WithTelemetryContextLocal<'f, T> {
     ctx: TelemetryContext,
 }
 
-impl<'f, T> Future for WithTelemetryContextLocal<'f, T> {
+impl<T> Future for WithTelemetryContextLocal<'_, T> {
     type Output = T;
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
