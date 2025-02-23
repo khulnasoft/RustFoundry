@@ -65,7 +65,7 @@ impl TelemetryDriver {
         {
             if let Some(server_fut) = self.server_fut.take() {
                 self.tele_futures.push(Box::pin(async move {
-                    server_fut.with_graceful_shutdown(signal).await;
+                    server_fut.with_graceful_shutdown(signal).await?;
 
                     Ok(())
                 }));
